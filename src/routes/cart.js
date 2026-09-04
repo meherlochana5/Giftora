@@ -18,8 +18,11 @@ router.post('/',requireAuth,async(req,res,next)=>{
     if(!p.length)return res.status(404).json({message:'Product not found.'});
     if(p[0].stock<Number(quantity))return res.status(400).json({message:'Not enough stock.'});
     await pool.query(`INSERT INTO cart(user_id,product_id,quantity) VALUES(?,?,?)
-      ON DUPLICATE KEY UPDATE quantity=LEAST(quantity+VALUES(quantity), (SELECT stock FROM products WHERE id=VALUES(product_id)))`,
-      [req.user.id,productId,Number(quantity)]);
+  ON DUPLICATE KEY UPDATE quantity=LEAST(
+    cart.quantity+VALUES(quantity),
+    (SELECT stock FROM products WHERE products.id=cart.product_id)
+  )`,
+  [req.user.id,productId,Number(quantity)]);
     res.json({message:'Added to cart.'});
   }catch(e){next(e);}
 });
