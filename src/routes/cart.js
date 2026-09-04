@@ -14,19 +14,59 @@ router.get('/',requireAuth,async(req,res,next)=>{
 router.post('/',requireAuth,async(req,res,next)=>{
   try{
     const {productId,quantity=1}=req.body;
-    const [p]=await pool.query('SELECT id,stock FROM products WHERE id=?',[productId]);
-    if(!p.length)return res.status(404).json({message:'Product not found.'});
-    if(p[0].stock<Number(quantity))return res.status(400).json({message:'Not enough stock.'});
-    await pool.query(`INSERT INTO cart(user_id,product_id,quantity) VALUES(?,?,?)
-  ON DUPLICATE KEY UPDATE quantity=LEAST(
-    cart.quantity+VALUES(quantity),
-    (SELECT stock FROM products WHERE products.id=cart.product_id)
-  )`,
-  [req.user.id,productId,Number(quantity)]);
-    res.json({message:'Added to cart.'});
-  }catch(e){next(e);}
-});
+    const qty=Number(quantity);
 
+    const [p]=await pool.query(
+      'SELECT id,stock FROM products WHERE id=?',
+      [productId]
+    );
+
+    if(!p.length){
+      return res.status(404).json({
+        message:'Product not found.'
+      });
+    }
+
+    if(p[0].stock<qty){
+      return res.status(400).json({
+        message:'Not enough stock.'
+      });
+    }
+
+    const [existing]=await pool.query(
+      'SELECT quantity FROM cart WHERE user_id=? AND product_id=?',
+      [req.user.id,productId]
+    );
+
+    if(existing.length){
+
+      const newQuantity=Math.min(
+        existing[0].quantity+qty,
+        p[0].stock
+      );
+
+      await pool.query(
+        'UPDATE cart SET quantity=? WHERE user_id=? AND product_id=?',
+        [newQuantity,req.user.id,productId]
+      );
+
+    }else{
+
+      await pool.query(
+        'INSERT INTO cart(user_id,product_id,quantity) VALUES(?,?,?)',
+        [req.user.id,productId,qty]
+      );
+
+    }
+
+    res.json({
+      message:'Added to cart.'
+    });
+
+  }catch(e){
+    next(e);
+  }
+});
 router.put('/:productId',requireAuth,async(req,res,next)=>{
   try{
     const q=Number(req.body.quantity);
