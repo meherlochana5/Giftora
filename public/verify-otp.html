@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Verify OTP | Giftora</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+    <main class="auth-card">
+        <h1>Verify Email</h1>
+
+        <p>Enter the 6-digit OTP sent to your email.</p>
+
+        <form id="verifyForm">
+            <input
+                id="otp"
+                type="text"
+                maxlength="6"
+                inputmode="numeric"
+                placeholder="Enter 6-digit OTP"
+                required
+            >
+
+            <button type="submit">Verify OTP</button>
+        </form>
+
+        <p id="msg"></p>
+    </main>
+
+    <!-- common.js must load BEFORE auth.js -->
+    <script src="/js/common.js"></script>
+    <script src="/js/auth.js"></script>
+
+</body>
+</html>

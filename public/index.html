@@ -1,0 +1,6 @@
+<!doctype html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Giftora</title><link rel="stylesheet" href="/css/style.css"></head><body>
+<header id="navbar"></header><main class="container">
+<section class="hero"><h1>Find the Perfect Gift 🎁</h1><p>Gifts for every person and every occasion.</p><div class="searchbar"><input id="search" placeholder="Search gifts..."><button onclick="loadProducts()">Search</button></div></section>
+<section><h2>Shop by Recipient</h2><div id="categoryButtons" class="chips"></div></section>
+<section class="filters"><select id="occasion"><option value="">All occasions</option></select><select id="minPrice"><option value="">Min price</option><option value="0">₹0</option><option value="500">₹500</option><option value="1000">₹1000</option><option value="2000">₹2000</option></select><select id="maxPrice"><option value="">Max price</option><option value="500">₹500</option><option value="1000">₹1000</option><option value="2000">₹2000</option><option value="5000">₹5000</option></select><button onclick="clearFilters()">Clear</button></section>
+<h2>Products</h2><div id="products" class="grid"></div></main><script src="/js/common.js"></script><script src="/js/product.js"></script></body></html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Giftora - Admin Signup</title>
+
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+    <main class="container">
+
+        <div class="card">
+
+            <h1>Create Admin Account</h1>
+
+            <form id="adminSignupForm">
+
+                <input
+                    id="name"
+                    type="text"
+                    placeholder="Admin name"
+                    required
+                >
+
+                <input
+                    id="email"
+                    type="email"
+                    placeholder="Email"
+                    required
+                >
+
+                <input
+                    id="phone"
+                    type="text"
+                    placeholder="Phone number"
+                    required
+                >
+
+                <input
+                    id="password"
+                    type="password"
+                    placeholder="Password (6+ characters)"
+                    required
+                >
+
+                <input
+                    id="adminKey"
+                    type="password"
+                    placeholder="Admin Signup Key"
+                    required
+                >
+
+                <button type="submit">
+                    Create Admin
+                </button>
+
+            </form>
+
+            <p id="msg"></p>
+
+            <p>
+                Already have an admin account?
+                <a href="/admin-login.html">
+                    Admin Login
+                </a>
+            </p>
+
+        </div>
+
+    </main>
+
+
+    <!-- IMPORTANT: common.js must load BEFORE auth.js -->
+    <script src="/js/common.js"></script>
+    <script src="/js/auth.js"></script>
+
+</body>
+</html>
