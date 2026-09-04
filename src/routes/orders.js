@@ -1,7 +1,6 @@
 const express = require('express');
 const pool = require('../../db');
 const { requireAuth } = require('../middleware/auth');
-const { sendEmail } = require('../utils/email');
 
 const router = express.Router();
 
@@ -168,20 +167,6 @@ router.post('/', requireAuth, async (req, res, next) => {
 
     await conn.commit();
 
-    // Send order email
-    const [users] = await pool.query(
-      'SELECT email,name FROM users WHERE id=?',
-      [req.user.id]
-    );
-
-    if (users.length) {
-      await sendEmail(
-        users[0].email,
-        'Giftora Order Received',
-        `Hi ${users[0].name}, your order #GIF${String(order.insertId).padStart(5, '0')} was received. Total: ₹${total.toFixed(2)}. Payment: Cash on Delivery.`
-      );
-    }
-
     res.status(201).json({
       message: 'Order placed successfully.',
       orderId: order.insertId
@@ -258,20 +243,6 @@ router.post('/:id/cancel', requireAuth, async (req, res, next) => {
     );
 
     await conn.commit();
-
-    // Optional cancellation email
-    const [users] = await pool.query(
-      'SELECT email,name FROM users WHERE id=?',
-      [req.user.id]
-    );
-
-    if (users.length) {
-      await sendEmail(
-        users[0].email,
-        'Giftora Order Cancelled',
-        `Hi ${users[0].name}, your order #GIF${String(order.id).padStart(5, '0')} has been cancelled successfully.`
-      );
-    }
 
     res.json({
       message: 'Order cancelled successfully.'
