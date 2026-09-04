@@ -1,28 +1,56 @@
-const nodemailer = require('nodemailer');
-
-function hasSMTP() {
-  return Boolean(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASSWORD);
-}
-
 async function sendEmail(to, subject, text) {
-  if (!hasSMTP()) {
-    console.log(`\n[DEVELOPMENT EMAIL] To: ${to}\nSubject: ${subject}\n${text}\n`);
-    return;
-  }
+    const apiKey = process.env.BREVO_API_KEY;
+    const fromEmail = process.env.EMAIL_FROM;
 
-  const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: Number(process.env.SMTP_PORT || 587),
-    secure: Number(process.env.SMTP_PORT || 587) === 465,
-    auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASSWORD }
-  });
+    if (!apiKey) {
+        throw new Error('BREVO_API_KEY is not configured.');
+    }
 
-  await transporter.sendMail({
-    from: process.env.EMAIL_FROM || process.env.SMTP_USER,
-    to,
-    subject,
-    text
-  });
+    if (!fromEmail) {
+        throw new Error('EMAIL_FROM is not configured.');
+    }
+
+    const response = await fetch(
+        'https://api.brevo.com/v3/smtp/email',
+        {
+            method: 'POST',
+
+            headers: {
+                accept: 'application/json',
+                'api-key': apiKey,
+                'content-type': 'application/json'
+            },
+
+            body: JSON.stringify({
+                sender: {
+                    name: 'Giftora',
+                    email: fromEmail
+                },
+
+                to: [
+                    {
+                        email: to
+                    }
+                ],
+
+                subject: subject,
+                textContent: text
+            })
+        }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.message ||
+            'Unable to send email through Brevo.'
+        );
+    }
+
+    return data;
 }
 
-module.exports = { sendEmail };
+module.exports = {
+    sendEmail
+};
